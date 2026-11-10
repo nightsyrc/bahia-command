@@ -9,7 +9,6 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@neondatabase/serverless": "0.10.4",
     "next": "15.5.29",
     "next-auth": "4.24.15",
     "react": "19.1.0",

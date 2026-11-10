@@ -26,14 +26,9 @@ Es de solo lectura: no cambia datos en ningún sistema.
    Redirect URI: `https://TU-DOMINIO/api/auth/callback/google`. Copia el Client ID y el Secret a Vercel.
 4. **Stripe.** Dashboard → Developers → API keys → Create restricted key, llamada `bahia-command`, con **Read** en
    Charges, Balance y Checkout Sessions. El resto en None. Pégala como `STRIPE_READ_KEY`.
-5. **Neon (en cada base: Atalaya y Bahía).** En el SQL Editor crea un usuario de solo lectura:
-   ```sql
-   CREATE ROLE command_ro WITH LOGIN PASSWORD 'una-clave-larga';
-   GRANT USAGE ON SCHEMA public TO command_ro;
-   GRANT SELECT ON ALL TABLES IN SCHEMA public TO command_ro;
-   ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT ON TABLES TO command_ro;
-   ```
-   Arma la URL con ese usuario y pégala en `ATALAYA_DATABASE_URL` y `BAHIA_DATABASE_URL`.
+5. **Atalaya y Bahía.** Pon el mismo `COMMAND_TOKEN` (32+ caracteres aleatorios) en los tres proyectos de Vercel,
+   y en este agrega `ATALAYA_STATS_URL` y `BAHIA_STATS_URL` (ver `.env.example`). Cada sistema entrega solo un
+   resumen de solo lectura; ninguna contraseña de base de datos sale de su proyecto.
 6. **Vercel token.** vercel.com/account/tokens → Create, con acceso a tu equipo. `VERCEL_TEAM_ID` está en Team Settings.
 7. **NEXTAUTH_SECRET.** En PowerShell: `[Convert]::ToBase64String((1..32 | % {Get-Random -Max 256}))`.
 8. Despliega, abre el dominio, entra con Google. Si una sección dice "Sin conectar", falta esa variable.

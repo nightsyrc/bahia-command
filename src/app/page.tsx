@@ -23,8 +23,8 @@ export default async function Command() {
 
   const [ing, pros, ope, dep] = await Promise.all([
     panel(env("STRIPE_READ_KEY"), ingresos),
-    panel(env("BAHIA_DATABASE_URL"), prospectos),
-    panel(env("ATALAYA_DATABASE_URL"), operacion),
+    panel(env("BAHIA_STATS_URL") ?? env("COMMAND_TOKEN"), prospectos),
+    panel(env("ATALAYA_STATS_URL") ?? env("COMMAND_TOKEN"), operacion),
     panel(env("VERCEL_TOKEN"), despliegues),
   ]);
 
