@@ -11,6 +11,7 @@ async function pedir<T>(url: string): Promise<T> {
 export type Prospectos = {
   hoy: number; semana: number; mes: number; abiertos: number; bajas: number;
   porInteres: { interes: string; n: number }[];
+  porOrigen?: { origen: string; n: number }[];
   ultimos: { creado_at: string; nombre: string; empresa: string | null; email: string; interes: string; estado: string; seg_paso: number }[];
 };
 

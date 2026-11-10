@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import { redirect } from "next/navigation";
 import { requireAdmin } from "@/auth";
 import AutoRefresh from "@/components/AutoRefresh";
@@ -6,6 +7,8 @@ import { fecha, money, num, panel, type Panel } from "@/lib/fmt";
 import { ingresos } from "@/lib/stripe";
 import { operacion, prospectos } from "@/lib/db";
 import { despliegues } from "@/lib/vercel";
+import { CANALES, destinos, embudo } from "@/lib/faro";
+import FaroLinks from "@/components/FaroLinks";
 
 export const dynamic = "force-dynamic";
 
@@ -21,8 +24,9 @@ export default async function Command() {
   const admin = await requireAdmin();
   if (!admin) redirect("/login");
 
-  const [ing, pros, ope, dep] = await Promise.all([
+  const [ing, faro, pros, ope, dep] = await Promise.all([
     panel(env("STRIPE_READ_KEY"), ingresos),
+    panel(env("STRIPE_READ_KEY"), embudo),
     panel(env("BAHIA_STATS_URL") ?? env("COMMAND_TOKEN"), prospectos),
     panel(env("ATALAYA_STATS_URL") ?? env("COMMAND_TOKEN"), operacion),
     panel(env("VERCEL_TOKEN"), despliegues),
@@ -92,6 +96,53 @@ export default async function Command() {
             </table>
           </>
         )}
+      </section>
+
+
+      {/* ---------------- Faro: marketing que vende ---------------- */}
+      <section className="card">
+        <h2>Faro <span className="tag">de dónde viene cada venta · 30 días</span></h2>
+        <Aviso p={faro} />
+        {faro.ok && faro.data.sinPermiso && (
+          <p className="aviso">Falta un permiso: en Stripe, edita la llave <b>bahia-command</b> y pon <b>Checkout Sessions: Read</b>.</p>
+        )}
+        {faro.ok && !faro.data.sinPermiso && (
+          <>
+            <div className="kpis">
+              <div className="kpi"><span>Compras iniciadas</span><b>{num(faro.data.iniciadas)}</b></div>
+              <div className="kpi"><span>Compras pagadas</span><b>{num(faro.data.pagadas)}</b></div>
+              <div className="kpi"><span>Conversión</span><b>{faro.data.iniciadas ? Math.round((faro.data.pagadas / faro.data.iniciadas) * 100) : 0}%</b></div>
+              <div className="kpi"><span>Ingresos por Faro</span><b>{money(faro.data.ingresos)}</b></div>
+              {pros.ok && <div className="kpi"><span>Prospectos Bahía</span><b>{num(pros.data.mes)}</b></div>}
+            </div>
+            <table>
+              <thead><tr><th>Producto · canal</th><th className="r">Iniciadas</th><th className="r">Pagadas</th><th className="r">Ingresos</th></tr></thead>
+              <tbody>
+                {faro.data.productos.length === 0 && <tr><td colSpan={4} className="muted">Sin intentos de compra en 30 días.</td></tr>}
+                {faro.data.productos.map((p) => (
+                  <Fragment key={p.producto}>
+                    <tr className="grupo"><td><b>{p.producto}</b></td><td className="r"><b>{p.iniciadas}</b></td><td className="r"><b>{p.pagadas}</b></td><td className="r"><b>{money(p.ingresos)}</b></td></tr>
+                    {p.canales.map((c) => (
+                      <tr key={p.producto + c.canal}><td className="sub">↳ {c.canal}</td><td className="r">{c.iniciadas}</td><td className="r">{c.pagadas}</td><td className="r">{money(c.ingresos)}</td></tr>
+                    ))}
+                  </Fragment>
+                ))}
+                {pros.ok && (pros.data.porOrigen ?? []).length > 0 && (
+                  <>
+                    <tr className="grupo"><td><b>Prospectos Bahía Systems</b></td><td className="r"><b>{pros.data.mes}</b></td><td className="r">—</td><td className="r">—</td></tr>
+                    {(pros.data.porOrigen ?? []).map((o) => (
+                      <tr key={"b" + o.origen}><td className="sub">↳ {o.origen}</td><td className="r">{o.n}</td><td className="r">—</td><td className="r">—</td></tr>
+                    ))}
+                  </>
+                )}
+              </tbody>
+            </table>
+            <p className="muted small">&quot;sin rastrear&quot; = compras de antes de Faro o sin enlace rastreado. Publica siempre con los enlaces de abajo.</p>
+          </>
+        )}
+        <h3 className="sub3">Enlaces rastreados</h3>
+        <p className="muted small">Elige el canal donde vas a publicar y copia el enlace. Cada compra o prospecto que llegue por ahí aparece arriba con su canal.</p>
+        <FaroLinks destinos={destinos()} canales={CANALES} />
       </section>
 
       <div className="grid2">
