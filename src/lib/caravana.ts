@@ -1,4 +1,4 @@
-// Faro: embudo de ventas por canal. La fuente de verdad es Stripe (sesiones de pago y su metadata.src)
+// Caravana: embudo de ventas por canal. La fuente de verdad es Stripe (sesiones de pago y su metadata.src)
 // y los prospectos de Bahía (columna origen). No guarda nada propio.
 
 type Sesion = {

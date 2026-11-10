@@ -7,8 +7,8 @@ import { fecha, money, num, panel, type Panel } from "@/lib/fmt";
 import { ingresos } from "@/lib/stripe";
 import { operacion, prospectos } from "@/lib/db";
 import { despliegues } from "@/lib/vercel";
-import { CANALES, destinos, embudo } from "@/lib/faro";
-import FaroLinks from "@/components/FaroLinks";
+import { CANALES, destinos, embudo } from "@/lib/caravana";
+import CaravanaLinks from "@/components/CaravanaLinks";
 
 export const dynamic = "force-dynamic";
 
@@ -24,7 +24,7 @@ export default async function Command() {
   const admin = await requireAdmin();
   if (!admin) redirect("/login");
 
-  const [ing, faro, pros, ope, dep] = await Promise.all([
+  const [ing, caravana, pros, ope, dep] = await Promise.all([
     panel(env("STRIPE_READ_KEY"), ingresos),
     panel(env("STRIPE_READ_KEY"), embudo),
     panel(env("BAHIA_STATS_URL") ?? env("COMMAND_TOKEN"), prospectos),
@@ -99,27 +99,27 @@ export default async function Command() {
       </section>
 
 
-      {/* ---------------- Faro: marketing que vende ---------------- */}
+      {/* ---------------- Caravana: marketing que vende ---------------- */}
       <section className="card">
-        <h2>Faro <span className="tag">de dónde viene cada venta · 30 días</span></h2>
-        <Aviso p={faro} />
-        {faro.ok && faro.data.sinPermiso && (
+        <h2>Caravana <span className="tag">de dónde viene cada venta · 30 días</span></h2>
+        <Aviso p={caravana} />
+        {caravana.ok && caravana.data.sinPermiso && (
           <p className="aviso">Falta un permiso: en Stripe, edita la llave <b>bahia-command</b> y pon <b>Checkout Sessions: Read</b>.</p>
         )}
-        {faro.ok && !faro.data.sinPermiso && (
+        {caravana.ok && !caravana.data.sinPermiso && (
           <>
             <div className="kpis">
-              <div className="kpi"><span>Compras iniciadas</span><b>{num(faro.data.iniciadas)}</b></div>
-              <div className="kpi"><span>Compras pagadas</span><b>{num(faro.data.pagadas)}</b></div>
-              <div className="kpi"><span>Conversión</span><b>{faro.data.iniciadas ? Math.round((faro.data.pagadas / faro.data.iniciadas) * 100) : 0}%</b></div>
-              <div className="kpi"><span>Ingresos por Faro</span><b>{money(faro.data.ingresos)}</b></div>
+              <div className="kpi"><span>Compras iniciadas</span><b>{num(caravana.data.iniciadas)}</b></div>
+              <div className="kpi"><span>Compras pagadas</span><b>{num(caravana.data.pagadas)}</b></div>
+              <div className="kpi"><span>Conversión</span><b>{caravana.data.iniciadas ? Math.round((caravana.data.pagadas / caravana.data.iniciadas) * 100) : 0}%</b></div>
+              <div className="kpi"><span>Ingresos por Caravana</span><b>{money(caravana.data.ingresos)}</b></div>
               {pros.ok && <div className="kpi"><span>Prospectos Bahía</span><b>{num(pros.data.mes)}</b></div>}
             </div>
             <table>
               <thead><tr><th>Producto · canal</th><th className="r">Iniciadas</th><th className="r">Pagadas</th><th className="r">Ingresos</th></tr></thead>
               <tbody>
-                {faro.data.productos.length === 0 && <tr><td colSpan={4} className="muted">Sin intentos de compra en 30 días.</td></tr>}
-                {faro.data.productos.map((p) => (
+                {caravana.data.productos.length === 0 && <tr><td colSpan={4} className="muted">Sin intentos de compra en 30 días.</td></tr>}
+                {caravana.data.productos.map((p) => (
                   <Fragment key={p.producto}>
                     <tr className="grupo"><td><b>{p.producto}</b></td><td className="r"><b>{p.iniciadas}</b></td><td className="r"><b>{p.pagadas}</b></td><td className="r"><b>{money(p.ingresos)}</b></td></tr>
                     {p.canales.map((c) => (
@@ -137,12 +137,12 @@ export default async function Command() {
                 )}
               </tbody>
             </table>
-            <p className="muted small">&quot;sin rastrear&quot; = compras de antes de Faro o sin enlace rastreado. Publica siempre con los enlaces de abajo.</p>
+            <p className="muted small">&quot;sin rastrear&quot; = compras de antes de Caravana o sin enlace rastreado. Publica siempre con los enlaces de abajo.</p>
           </>
         )}
         <h3 className="sub3">Enlaces rastreados</h3>
         <p className="muted small">Elige el canal donde vas a publicar y copia el enlace. Cada compra o prospecto que llegue por ahí aparece arriba con su canal.</p>
-        <FaroLinks destinos={destinos()} canales={CANALES} />
+        <CaravanaLinks destinos={destinos()} canales={CANALES} />
       </section>
 
       <div className="grid2">

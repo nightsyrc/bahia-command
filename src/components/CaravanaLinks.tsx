@@ -4,7 +4,7 @@ import { useState } from "react";
 type Destino = { id: string; nombre: string; url: string };
 
 /** Genera el enlace rastreado de cada destino para el canal elegido y lo copia con un toque. */
-export default function FaroLinks({ destinos, canales }: { destinos: Destino[]; canales: readonly string[] }) {
+export default function CaravanaLinks({ destinos, canales }: { destinos: Destino[]; canales: readonly string[] }) {
   const [canal, setCanal] = useState(canales[0]);
   const [copiado, setCopiado] = useState<string | null>(null);
   const enlace = (d: Destino) => `${d.url}${d.url.includes("?") ? "&" : "?"}src=${canal}`;
@@ -18,7 +18,7 @@ export default function FaroLinks({ destinos, canales }: { destinos: Destino[]; 
   }
 
   return (
-    <div className="faroLinks">
+    <div className="caravanaLinks">
       <div className="chips" role="radiogroup" aria-label="Canal">
         {canales.map((c) => (
           <button key={c} type="button" role="radio" aria-checked={c === canal} className={`chip ${c === canal ? "on" : ""}`} onClick={() => setCanal(c)}>
