@@ -12,6 +12,7 @@ export type Embudo = { productos: FilaProducto[]; iniciadas: number; pagadas: nu
 
 const NOMBRES: Record<string, string> = {
   "nightsyrc-guitar-academy-beta1": "Libro Nightsyrc Guitar Academy",
+  "nightsyrc-clase-guitarra-1h": "Clase de guitarra 1 hora",
   tournament_entry: "Inscripción a torneos AoE2",
 };
 
@@ -71,8 +72,23 @@ export function destinos() {
   const nightsyrc = process.env.NIGHTSYRC_URL ?? "https://nightsyrc.vercel.app";
   const bahia = process.env.BAHIA_URL ?? "https://bahia-systems.vercel.app";
   return [
-    { id: "libro-es", nombre: "Libro de guitarra (español)", url: `${nightsyrc}/es/nightsyrcGuitarAcademy` },
+    { id: "libro-es", nombre: "Libro de guitarra · 89 MXN", url: `${nightsyrc}/es/nightsyrcGuitarAcademy` },
+    { id: "clase-es", nombre: "Clase de guitarra · 350 MXN", url: `${nightsyrc}/es/clases-de-guitarra` },
+    { id: "tienda", nombre: "Tienda Nightsyrc (todo junto)", url: `${nightsyrc}/es/tienda` },
+    { id: "eventos", nombre: "Guitarrista para eventos (consulta)", url: `${nightsyrc}/es/guitarrista-para-eventos` },
+    { id: "banda", nombre: "Cerberus Rock Band (consulta)", url: `${nightsyrc}/es/banda` },
+    { id: "estudio", nombre: "Nightsyrc Studios (consulta)", url: `${nightsyrc}/es/servicios` },
     { id: "libro-en", nombre: "Guitar book (English)", url: `${nightsyrc}/nightsyrcGuitarAcademy` },
+    { id: "clase-en", nombre: "Guitar lesson (English)", url: `${nightsyrc}/guitar-lessons` },
     { id: "bahia", nombre: "Bahía Systems: demo de Atalaya", url: `${bahia}/` },
   ];
+}
+
+// ---------- Consultas de servicios (Nightsyrc) ----------
+export type Consultas = { mes: number; semana: number; filas: { tipo: string; src: string; n: number }[] };
+
+export async function consultas(): Promise<Consultas> {
+  const r = await fetch(process.env.NIGHTSYRC_STATS_URL!, { headers: { Authorization: `Bearer ${process.env.COMMAND_TOKEN}` }, cache: "no-store" });
+  if (!r.ok) throw new Error(`nightsyrc respondió ${r.status}`);
+  return (await r.json()) as Consultas;
 }

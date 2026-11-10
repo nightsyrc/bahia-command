@@ -7,7 +7,7 @@ import { fecha, money, num, panel, type Panel } from "@/lib/fmt";
 import { ingresos } from "@/lib/stripe";
 import { operacion, prospectos } from "@/lib/db";
 import { despliegues } from "@/lib/vercel";
-import { CANALES, destinos, embudo } from "@/lib/caravana";
+import { CANALES, consultas, destinos, embudo } from "@/lib/caravana";
 import CaravanaLinks from "@/components/CaravanaLinks";
 
 export const dynamic = "force-dynamic";
@@ -24,9 +24,10 @@ export default async function Command() {
   const admin = await requireAdmin();
   if (!admin) redirect("/login");
 
-  const [ing, caravana, pros, ope, dep] = await Promise.all([
+  const [ing, caravana, cons, pros, ope, dep] = await Promise.all([
     panel(env("STRIPE_READ_KEY"), ingresos),
     panel(env("STRIPE_READ_KEY"), embudo),
+    panel(env("NIGHTSYRC_STATS_URL") ?? env("COMMAND_TOKEN"), consultas),
     panel(env("BAHIA_STATS_URL") ?? env("COMMAND_TOKEN"), prospectos),
     panel(env("ATALAYA_STATS_URL") ?? env("COMMAND_TOKEN"), operacion),
     panel(env("VERCEL_TOKEN"), despliegues),
@@ -113,6 +114,7 @@ export default async function Command() {
               <div className="kpi"><span>Compras pagadas</span><b>{num(caravana.data.pagadas)}</b></div>
               <div className="kpi"><span>Conversión</span><b>{caravana.data.iniciadas ? Math.round((caravana.data.pagadas / caravana.data.iniciadas) * 100) : 0}%</b></div>
               <div className="kpi"><span>Ingresos por Caravana</span><b>{money(caravana.data.ingresos)}</b></div>
+              {cons.ok && <div className="kpi"><span>Consultas Nightsyrc</span><b>{num(cons.data.mes)}</b></div>}
               {pros.ok && <div className="kpi"><span>Prospectos Bahía</span><b>{num(pros.data.mes)}</b></div>}
             </div>
             <table>
@@ -127,6 +129,14 @@ export default async function Command() {
                     ))}
                   </Fragment>
                 ))}
+                {cons.ok && cons.data.filas.length > 0 && (
+                  <>
+                    <tr className="grupo"><td><b>Consultas Nightsyrc (eventos, banda, estudio)</b></td><td className="r"><b>{cons.data.mes}</b></td><td className="r">—</td><td className="r">—</td></tr>
+                    {cons.data.filas.map((f) => (
+                      <tr key={"c" + f.tipo + f.src}><td className="sub">↳ {f.tipo} · {f.src}</td><td className="r">{f.n}</td><td className="r">—</td><td className="r">—</td></tr>
+                    ))}
+                  </>
+                )}
                 {pros.ok && (pros.data.porOrigen ?? []).length > 0 && (
                   <>
                     <tr className="grupo"><td><b>Prospectos Bahía Systems</b></td><td className="r"><b>{pros.data.mes}</b></td><td className="r">—</td><td className="r">—</td></tr>
