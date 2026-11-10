@@ -108,7 +108,7 @@ async function embudoDirecto(): Promise<Embudo> {
 }
 
 // ---------- Enlaces rastreados ----------
-export const CANALES = ["facebook", "instagram", "tiktok", "youtube", "whatsapp", "twitch", "kick"] as const;
+export const CANALES = ["facebook", "instagram", "tiktok", "youtube", "whatsapp", "twitch", "kick", "discord", "reddit"] as const;
 
 export function destinos() {
   const nightsyrc = process.env.NIGHTSYRC_URL ?? "https://nightsyrc.vercel.app";
@@ -123,6 +123,9 @@ export function destinos() {
     { id: "estudio", nombre: "Nightsyrc Studios (consulta)", url: `${nightsyrc}/es/servicios` },
     { id: "libro-en", nombre: "Guitar book (English)", url: `${nightsyrc}/nightsyrcGuitarAcademy` },
     { id: "clase-en", nombre: "Guitar lesson (English)", url: `${nightsyrc}/guitar-lessons` },
+    { id: "torneos-aoe2", nombre: "Torneos AoE2 · avísame (captación)", url: `${nightsyrc}/es/captacion` },
+    { id: "clan-ngtmx", nombre: "Clan NGTMX (reclutamiento)", url: `${nightsyrc}/es/clan` },
+    { id: "clase-aoe2", nombre: "Clase de AoE2 · 250 MXN", url: `${nightsyrc}/es/clan#clase` },
     { id: "bahia", nombre: "Bahía Systems: demo de Atalaya", url: `${bahia}/` },
   ];
 }
