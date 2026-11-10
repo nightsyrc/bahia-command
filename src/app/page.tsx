@@ -137,6 +137,14 @@ export default async function Command() {
                     ))}
                   </>
                 )}
+                {cons.ok && (cons.data.contenido ?? []).length > 0 && (
+                  <>
+                    <tr className="grupo"><td><b>Contenido ingerido de redes</b></td><td className="r"><b>{(cons.data.contenido ?? []).reduce((x, c) => x + c.semana, 0)}</b></td><td className="r">—</td><td className="r">—</td></tr>
+                    {(cons.data.contenido ?? []).map((c) => (
+                      <tr key={"i" + c.red}><td className="sub">↳ {c.red} · {c.total} en total</td><td className="r">{c.semana}</td><td className="r">—</td><td className="r">—</td></tr>
+                    ))}
+                  </>
+                )}
                 {pros.ok && (pros.data.porOrigen ?? []).length > 0 && (
                   <>
                     <tr className="grupo"><td><b>Prospectos Bahía Systems</b></td><td className="r"><b>{pros.data.mes}</b></td><td className="r">—</td><td className="r">—</td></tr>

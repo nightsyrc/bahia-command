@@ -14,6 +14,10 @@ const NOMBRES: Record<string, string> = {
   "nightsyrc-guitar-academy-beta1": "Libro Nightsyrc Guitar Academy",
   "nightsyrc-clase-guitarra-1h": "Clase de guitarra 1 hora",
   tournament_entry: "Inscripción a torneos AoE2",
+  "licencia-musica": "Licencia de música original",
+  "pistas-acompanamiento": "Pista de acompañamiento",
+  "foto-hd": "Foto en alta resolución",
+  "clases-4": "Paquete de 4 clases",
 };
 
 /** Sesiones de pago de los últimos 30 días, agrupadas por producto y por canal (metadata.src). */
@@ -75,6 +79,7 @@ export function destinos() {
     { id: "libro-es", nombre: "Libro de guitarra · 89 MXN", url: `${nightsyrc}/es/nightsyrcGuitarAcademy` },
     { id: "clase-es", nombre: "Clase de guitarra · 350 MXN", url: `${nightsyrc}/es/clases-de-guitarra` },
     { id: "tienda", nombre: "Tienda Nightsyrc (todo junto)", url: `${nightsyrc}/es/tienda` },
+    { id: "shop-en", nombre: "Nightsyrc shop (English)", url: `${nightsyrc}/shop` },
     { id: "eventos", nombre: "Guitarrista para eventos (consulta)", url: `${nightsyrc}/es/guitarrista-para-eventos` },
     { id: "banda", nombre: "Cerberus Rock Band (consulta)", url: `${nightsyrc}/es/banda` },
     { id: "estudio", nombre: "Nightsyrc Studios (consulta)", url: `${nightsyrc}/es/servicios` },
@@ -85,7 +90,7 @@ export function destinos() {
 }
 
 // ---------- Consultas de servicios (Nightsyrc) ----------
-export type Consultas = { mes: number; semana: number; filas: { tipo: string; src: string; n: number }[] };
+export type Consultas = { mes: number; semana: number; filas: { tipo: string; src: string; n: number }[]; contenido?: { red: string; total: number; semana: number; ultimo: string | null }[] };
 
 export async function consultas(): Promise<Consultas> {
   const r = await fetch(process.env.NIGHTSYRC_STATS_URL!, { headers: { Authorization: `Bearer ${process.env.COMMAND_TOKEN}` }, cache: "no-store" });
