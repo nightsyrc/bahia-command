@@ -20,8 +20,46 @@ const NOMBRES: Record<string, string> = {
   "clases-4": "Paquete de 4 clases",
 };
 
-/** Sesiones de pago de los últimos 30 días, agrupadas por producto y por canal (metadata.src). */
+function armar(filas: { producto: string; src: string; iniciadas: number; pagadas: number; ingresos: number }[]): Embudo {
+  const porProducto = new Map<string, FilaCanal[]>();
+  for (const f of filas) {
+    const nombre = NOMBRES[f.producto] ?? f.producto;
+    const lista = porProducto.get(nombre) ?? [];
+    lista.push({ canal: f.src, iniciadas: f.iniciadas, pagadas: f.pagadas, ingresos: f.ingresos });
+    porProducto.set(nombre, lista);
+  }
+  const productos: FilaProducto[] = [...porProducto].map(([producto, canales]) => {
+    canales.sort((a, b) => b.ingresos - a.ingresos || b.iniciadas - a.iniciadas);
+    return {
+      producto, canales,
+      iniciadas: canales.reduce((a, c) => a + c.iniciadas, 0),
+      pagadas: canales.reduce((a, c) => a + c.pagadas, 0),
+      ingresos: canales.reduce((a, c) => a + c.ingresos, 0),
+    };
+  }).sort((a, b) => b.ingresos - a.ingresos || b.iniciadas - a.iniciadas);
+  return {
+    productos, sinPermiso: false,
+    iniciadas: productos.reduce((a, p) => a + p.iniciadas, 0),
+    pagadas: productos.reduce((a, p) => a + p.pagadas, 0),
+    ingresos: productos.reduce((a, p) => a + p.ingresos, 0),
+  };
+}
+
+/** Embudo de 30 días. Primero lo pide al sitio de Nightsyrc (usa su propia llave de Stripe); si no está, lo lee de Stripe. */
 export async function embudo(): Promise<Embudo> {
+  if (process.env.NIGHTSYRC_STATS_URL && process.env.COMMAND_TOKEN) {
+    try {
+      const r = await fetch(process.env.NIGHTSYRC_STATS_URL, { headers: { Authorization: `Bearer ${process.env.COMMAND_TOKEN}` }, cache: "no-store" });
+      if (r.ok) {
+        const j = (await r.json()) as { embudo?: { producto: string; src: string; iniciadas: number; pagadas: number; ingresos: number }[] | null };
+        if (Array.isArray(j.embudo)) return armar(j.embudo);
+      }
+    } catch { /* se intenta directo con Stripe */ }
+  }
+  return embudoDirecto();
+}
+
+async function embudoDirecto(): Promise<Embudo> {
   const desde = Math.floor(Date.now() / 1000) - 30 * 86400;
   const sesiones: Sesion[] = [];
   let despues: string | null = null;
