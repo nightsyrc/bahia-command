@@ -46,6 +46,7 @@ export default async function Command() {
           <h1>Command</h1>
         </div>
         <div className="who">
+          <a href="/orquestador">Orquestador</a>
           <span className="muted">{admin} · actualizado {fecha(Date.now())}</span>
           <SignOut />
         </div>

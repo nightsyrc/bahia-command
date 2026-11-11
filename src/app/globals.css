@@ -47,3 +47,13 @@ td.sub { padding-left: 22px; color: var(--muted); }
 .chip { padding: 6px 12px; border-radius: 99px; background: transparent; color: var(--ink); font-size: 14px; }
 .chip.on { background: var(--teal); border-color: var(--teal); color: #fff; font-weight: 700; }
 code { word-break: break-all; }
+.ordenes { list-style: none; margin: 14px 0 0; padding: 0; display: grid; gap: 10px; }
+.ordenes li { display: flex; gap: 12px; justify-content: space-between; align-items: flex-start; border: 1px solid var(--line); border-radius: 10px; padding: 12px; }
+.ordenes p { margin: 2px 0 0; } .ordenes button { flex-shrink: 0; }
+.ordenes button:disabled { opacity: 0.5; cursor: wait; }
+.confirma { border-color: var(--bad); color: var(--bad); }
+.bien { color: var(--ok); }
+.atencion { margin: 0 0 10px; padding: 0; list-style: none; display: grid; gap: 8px; }
+.atencion li { padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line); border-left-width: 4px; }
+.atencion .mal { border-left-color: var(--bad); } .atencion .ojo { border-left-color: #e0a93b; }
+@media (max-width: 520px) { .ordenes li { flex-direction: column; } .ordenes button { width: 100%; } }
