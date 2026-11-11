@@ -13,6 +13,7 @@ export type Embudo = { productos: FilaProducto[]; iniciadas: number; pagadas: nu
 const NOMBRES: Record<string, string> = {
   "nightsyrc-guitar-academy-beta1": "Libro Nightsyrc Guitar Academy",
   "nightsyrc-clase-guitarra-1h": "Clase de guitarra 1 hora",
+  "nightsyrc-coaching-aoe2-1h": "Coaching de AoE2 1 hora",
   tournament_entry: "Inscripción a torneos AoE2",
   "licencia-musica": "Licencia de música original",
   "pistas-acompanamiento": "Pista de acompañamiento",
@@ -116,6 +117,7 @@ export function destinos() {
   return [
     { id: "libro-es", nombre: "Libro de guitarra · 89 MXN", url: `${nightsyrc}/es/nightsyrcGuitarAcademy` },
     { id: "clase-es", nombre: "Clase de guitarra · 350 MXN", url: `${nightsyrc}/es/clases-de-guitarra` },
+    { id: "coaching-es", nombre: "Coaching de AoE2 · 200 MXN", url: `${nightsyrc}/es/coaching-aoe2` },
     { id: "tienda", nombre: "Tienda Nightsyrc (todo junto)", url: `${nightsyrc}/es/tienda` },
     { id: "shop-en", nombre: "Nightsyrc shop (English)", url: `${nightsyrc}/shop` },
     { id: "eventos", nombre: "Guitarrista para eventos (consulta)", url: `${nightsyrc}/es/guitarrista-para-eventos` },
